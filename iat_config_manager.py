@@ -17,8 +17,9 @@ OTHERS = "Andere"
 AGGRO = "Aggression"
 PEACE = "Friedlichkeit"
 
+ME_AGGRO = (ME, AGGRO)
+ME_AGGRO = "Ich Aggression"
 
-# todo make a setting that auto gens this directory
 _default_config = {
     'version_and_block_keypress_to_option_conversion_table' : {
         "1": {
@@ -27,7 +28,7 @@ _default_config = {
                   RIGHT: OTHERS},
             "2": {LEFT: AGGRO,
                   RIGHT: PEACE},
-            "3": {LEFT: (ME, AGGRO),
+            "3": {LEFT: ME_AGGRO,
                   RIGHT: (OTHERS, PEACE)},
             "4": {LEFT: PEACE,
                   RIGHT: AGGRO},
@@ -44,7 +45,7 @@ _default_config = {
             "4": {LEFT: PEACE,
                   RIGHT: AGGRO},
             "5": {LEFT: (OTHERS, PEACE),
-                  RIGHT: (ME, AGGRO)}
+                  RIGHT: ME_AGGRO}
         },
         "3": {
             "1": {LEFT: ME,
@@ -55,7 +56,7 @@ _default_config = {
                   RIGHT: (OTHERS, AGGRO)},
             "4": {LEFT: AGGRO,
                   RIGHT: PEACE},
-            "5": {LEFT: (ME, AGGRO),
+            "5": {LEFT: ME_AGGRO,
                   RIGHT: (OTHERS, PEACE)}
         },
         "4": {
@@ -64,7 +65,7 @@ _default_config = {
             "2": {LEFT: PEACE,
                   RIGHT: AGGRO},
             "3": {LEFT: (OTHERS, PEACE),
-                  RIGHT: (ME, AGGRO)},
+                  RIGHT: ME_AGGRO},
             "4": {LEFT: AGGRO,
                   RIGHT: PEACE},
             "5": {LEFT: (OTHERS, AGGRO),
@@ -90,7 +91,8 @@ _default_config = {
     'inclusive_maximum_response_time': 100000,
     'event_type': ["Response"],
     'code': ["1", "2"],
-    'skip_errored_on_trial': True
+    'skip_errored_on_trial': True, 
+    'prohibit_output_options' : []
 }
 
 

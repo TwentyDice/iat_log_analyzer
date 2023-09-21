@@ -133,7 +133,8 @@ def process_files():
                         continue
 
                     # this converts what the participant pressed (left or right) into the
-                    question_option = str(cfg.version_and_block_keypress_to_option_conversion_table.get(version).get(block).get(direction))
+                    question_option = str(cfg.version_and_block_keypress_to_option_conversion_table.get(
+                        version).get(block).get(direction))
                     all_response_times = 0
 
                     trials_per_direction = len(trials_and_times_for_direction)
@@ -165,7 +166,7 @@ def process_files():
             for block_number, before_val in before_after_water_subset.items():
                 for block_key, pressable_options in before_val.items():
                     for question_option in pressable_options.keys():
-                        if question_option not in header_row:
+                        if (question_option not in header_row) and (question_option not in cfg.prohibit_output_options):
                             header_row.append(question_option)
 
         # You will need 'wb' mode in Python 2.x
@@ -182,9 +183,11 @@ def process_files():
                         out_line["person_id"] = person_id
                         out_line["before_after_water"] = block_number
                         out_line["block"] = block_key
-                        
+
                         print_line = False
                         for option, average_response_time in pressable_options.items():
+                            if option in cfg.prohibit_output_options:
+                                continue
                             if average_response_time:
                                 print_line = True
                                 if option in out_line.keys():
@@ -197,4 +200,13 @@ def process_files():
 
 
 if __name__ == "__main__":
-    process_files()
+    try:
+        process_files()
+    except Exception:
+        import sys
+        print(sys.exc_info()[0])
+        import traceback
+        print(traceback.format_exc())
+    finally:
+        print("Press Enter to continue ...")
+        input()
