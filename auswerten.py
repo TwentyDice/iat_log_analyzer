@@ -8,6 +8,7 @@ import pprint
 import pandas
 
 import iat_config_manager
+import gui_manager
 
 
 def get_info_from_filename(file_name):
@@ -66,7 +67,7 @@ def proc_single_file(file_path, cfg):
             continue
 
         # start on configured trial number
-        if (trial_number := int(table.loc[row_idx, "Trial"])) < int(cfg.inclusive_min_trial_number):
+        if (trial_number := int(table.loc[row_idx, "Trial"])) < int(cfg.inclusive_minimum_trial_number):
             continue
 
         # consider min and max response times
@@ -96,67 +97,66 @@ def proc_single_file(file_path, cfg):
     return aggregated_respones
 
 
-def process_files():
+def process_files(cfg=None):
 
-    with iat_config_manager.IAT_config() as cfg:
-        path = os.path.abspath(cfg.path_input_directory)
+    path = os.path.abspath(cfg.path_input_directory)
 
-        participants = {}
+    participants = {}
 
-        with os.scandir(path) as dir:
-            for entry in dir:
-                try:
-                    # get participant id, before/after water, blocknumber, version from the single teststep
-                    id, t_id, block, version = get_info_from_filename(
-                        str(entry.name))
-                except Exception:
-                    print("could not process file" + entry.name)
+    with os.scandir(path) as dir:
+        for entry in dir:
+            try:
+                # get participant id, before/after water, blocknumber, version from the single teststep
+                id, t_id, block, version = get_info_from_filename(
+                    str(entry.name))
+            except Exception:
+                # TODO add to list to display
+                print("could not process file" + entry.name)
+                continue
+
+            # skip block if not wanted
+            if not block in cfg.include_blocks:
+                continue
+
+            test_step_results = proc_single_file(entry.path, cfg)
+
+            if id not in participants:
+                participants[id] = {}
+            if t_id not in participants[id]:
+                participants[id][t_id] = {}
+            if block not in participants[id][t_id]:
+                participants[id][t_id][block] = {}
+
+            person_root = {}
+
+            for direction, trials_and_times_for_direction in test_step_results.items():
+                if not direction in cfg.allowed_directions:
                     continue
 
-                # skip block if not wanted
-                if not block in cfg.include_blocks:
-                    continue
+                # this converts what the participant pressed (left or right) into the
+                question_option = str(cfg.version_and_block_keypress_to_option_conversion_table.get(
+                    version).get(block).get(direction))
+                all_response_times = 0
 
-                test_step_results = proc_single_file(entry.path, cfg)
+                trials_per_direction = len(trials_and_times_for_direction)
 
-                if id not in participants:
-                    participants[id] = {}
-                if t_id not in participants[id]:
-                    participants[id][t_id] = {}
-                if block not in participants[id][t_id]:
-                    participants[id][t_id][block] = {}
+                for trial in trials_and_times_for_direction:
+                    all_response_times += Decimal(trial.get("TTime"))
+                    person_root[question_option] = str(round(
+                        Decimal(all_response_times/trials_per_direction/10), 3))
 
-                person_root = {}
+            # Important: if an option that can be pressed would occure multiple times PER block
+            # per t_id (before/after water) this must be changed
+            # TODO: I think the block can be aggregated away somehow
+            # Or the option value which is assigned to the direction, in the big shitty version table can be de-tupled
+            # to show direction association to aggresion / peace
+            for pressable_option, average_reaction_for_option in person_root.items():
+                participants[id][t_id][block][pressable_option] = average_reaction_for_option
 
-                for direction, trials_and_times_for_direction in test_step_results.items():
-                    if not direction in cfg.allowed_directions:
-                        continue
-
-                    # this converts what the participant pressed (left or right) into the
-                    question_option = str(cfg.version_and_block_keypress_to_option_conversion_table.get(
-                        version).get(block).get(direction))
-                    all_response_times = 0
-
-                    trials_per_direction = len(trials_and_times_for_direction)
-
-                    for trial in trials_and_times_for_direction:
-                        all_response_times += Decimal(trial.get("TTime"))
-                        person_root[question_option] = str(round(
-                            Decimal(all_response_times/trials_per_direction/10), 3))
-
-                # Important: if an option that can be pressed would occure multiple times PER block
-                # per t_id (before/after water) this must be changed
-                # TODO: I think the block can be aggregated away somehow
-                # Or the option value which is assigned to the direction, in the big shitty version table can be de-tupled
-                # to show direction association to aggresion / peace
-                for pressable_option, average_reaction_for_option in person_root.items():
-                    participants[id][t_id][block][pressable_option] = average_reaction_for_option
-
-        header_row = [
-            "person_id",
-            "before_after_water",
-            "block",
-        ]
+        header_row = ["person_id",
+                      "before_after_water",
+                      "block",
+                      ]
 
         pp = pprint.PrettyPrinter(depth=4)
         pp.pprint(participants)
@@ -194,14 +194,14 @@ def process_files():
                                     out_line[option] = average_response_time
                         if print_line:
                             w.writerow(out_line)
-                            # w.writerow(out_line)
 
     return
 
 
 if __name__ == "__main__":
     try:
-        process_files()
+        with iat_config_manager.IAT_config() as cfg:
+            process_files(cfg)
     except Exception:
         import sys
         print(sys.exc_info()[0])

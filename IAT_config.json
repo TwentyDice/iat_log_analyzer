@@ -138,14 +138,12 @@
         "rechts"
     ],
     "csv_dialect": "excel-tab",
-    "input_directory": "input",
-    "output_directory": "output",
     "output_filename": "results.tsv",
     "include_blocks": [
         "3",
         "5"
     ],
-    "inclusive_min_trial_number": 0,
+    "inclusive_minimum_trial_number": 0,
     "inclusive_minimum_response_time": 4000,
     "inclusive_maximum_response_time": 100000,
     "event_type": [
