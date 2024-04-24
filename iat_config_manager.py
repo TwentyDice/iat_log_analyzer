@@ -1,8 +1,15 @@
 # import pandas
 import os
 import json
+import gui_manager
+from datetime import datetime as dt
 
 CONFIG_FILE_NAME = "IAT_config.json"
+
+INPUT_DIR_SELECT_MESSAGE = "Select folder with all files to be processed"
+OUTPUT_DIR_SELECT_MESSAGE = "Select where the Results file will be saved.\n"\
+    "The results file has a timestamp, to distinguish when doing multiple runs.\n"\
+    "Do not use the same directory, used for the input data!"
 
 t_code_trans = {
     "0": "before",
@@ -21,7 +28,7 @@ ME_AGGRO = (ME, AGGRO)
 ME_AGGRO = "Ich Aggression"
 
 _default_config = {
-    'version_and_block_keypress_to_option_conversion_table' : {
+    'version_and_block_keypress_to_option_conversion_table': {
         "1": {
             # blocks
             "1": {LEFT: ME,
@@ -81,18 +88,16 @@ _default_config = {
         "2": RIGHT
     },
     'allowed_directions': [LEFT, RIGHT],
-    'csv_dialect' : "excel-tab",
-    'input_directory': 'input',
-    'output_directory': 'output',
+    'csv_dialect': "excel-tab",
     'output_filename': 'results.tsv',
     'include_blocks': ["3", "5"],
-    'inclusive_min_trial_number': 0,
+    'inclusive_minimum_trial_number': 0,
     'inclusive_minimum_response_time': 4000,
     'inclusive_maximum_response_time': 100000,
     'event_type': ["Response"],
     'code': ["1", "2"],
-    'skip_errored_on_trial': True, 
-    'prohibit_output_options' : []
+    'skip_errored_on_trial': True,
+    'prohibit_output_options': []
 }
 
 
@@ -115,6 +120,15 @@ class IAT_config:
 
     def __enter__(self):
         return self
+
+    def create_input_output_paths(self):
+        self.path_input_directory = gui_manager.get_dir_with_info_msgbox(
+            msg=INPUT_DIR_SELECT_MESSAGE)
+
+        self.path_output_file = os.path.join(
+            gui_manager.get_dir_with_info_msgbox(
+                msg=OUTPUT_DIR_SELECT_MESSAGE),
+                  self.output_filename, dt.now().strftime("%Y-%m-%d_%H-%M-%S"))
 
     def create_full_paths(self):
         self.path_input_directory = os.path.join(
