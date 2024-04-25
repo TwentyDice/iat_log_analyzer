@@ -10,6 +10,8 @@ INPUT_DIR_SELECT_MESSAGE = "Select folder with all files to be processed"
 OUTPUT_DIR_SELECT_MESSAGE = "Select where the Results file will be saved.\n"\
     "The results file has a timestamp, to distinguish when doing multiple runs.\n"\
     "Do not use the same directory, used for the input data!"
+CONFIG_MODIFY_FAILED = "Could not modify config file (File open?)"
+CREATING_DEFAULT_CONFIG = "no config file found, creating default config"
 
 t_code_trans = {
     "0": "before",
@@ -88,8 +90,9 @@ _default_config = {
         "2": RIGHT
     },
     'allowed_directions': [LEFT, RIGHT],
+    'output_filename': 'results-',    
     'csv_dialect': "excel-tab",
-    'output_filename': 'results.tsv',
+    'output_filename_format': '.tsv',
     'include_blocks': ["3", "5"],
     'inclusive_minimum_trial_number': 0,
     'inclusive_minimum_response_time': 4000,
@@ -110,41 +113,39 @@ class IAT_config:
         if os.path.exists(self._config_location):
             try:
                 self.__dict__ = json.load(open(self._config_location))
-                self.create_full_paths()
             except Exception:
-                print("Failed to open config (File open?)")
+                gui_manager.show_error_msgbox(CONFIG_MODIFY_FAILED)
         else:
-            print("no config file found, creating default config")
+            gui_manager.show_info_msgbox(CREATING_DEFAULT_CONFIG)
             self.__dict__ = _default_config
             self.save_config_to_file()
+        self.create_input_output_paths()
 
     def __enter__(self):
         return self
 
     def create_input_output_paths(self):
+        # Show an info window with what folder user should select
+        # then open dialog for directory selection
         self.path_input_directory = gui_manager.get_dir_with_info_msgbox(
             msg=INPUT_DIR_SELECT_MESSAGE)
 
+        output_filename = "".join([self.output_filename,
+                                    dt.now().strftime("%Y-%m-%d_%H-%M-%S"),
+                                      self.output_filename_format])
+
         self.path_output_file = os.path.join(
             gui_manager.get_dir_with_info_msgbox(
-                msg=OUTPUT_DIR_SELECT_MESSAGE),
-                  self.output_filename, dt.now().strftime("%Y-%m-%d_%H-%M-%S"))
-
-    def create_full_paths(self):
-        self.path_input_directory = os.path.join(
-            self._exec_dirname, self.input_directory)
-        self.path_output_file = os.path.join(
-            self._exec_dirname, self.output_directory, self.output_filename)
+                msg=OUTPUT_DIR_SELECT_MESSAGE),output_filename)
 
     def save_config_to_file(self):
-        self.create_full_paths()
         try:
             json.dump(self.__dict__,
                       open(self._config_location, 'w'),
                       indent=4,
                       separators=(',', ': '))
         except Exception:
-            print("Failed to save config (File open?)")
+            gui_manager.show_error_msgbox(CONFIG_MODIFY_FAILED)
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.save_config_to_file()

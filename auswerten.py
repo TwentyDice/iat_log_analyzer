@@ -10,6 +10,7 @@ import pandas
 import iat_config_manager
 import gui_manager
 
+FILES_NAME_PROCESS_ERROR = "Some files could not be identified.\nCorrect the filename or remove them"
 
 def get_info_from_filename(file_name):
 
@@ -17,19 +18,26 @@ def get_info_from_filename(file_name):
 
     s = str(file_name)
     if not s.endswith(".log"):
-        raise Exception
+        raise ValueError("Wronge file format, must be .log")
 
     # Aggr-Impl35_t0-IATaggr_Block4_Version3&4.log
     #          ^^
     id = s.partition("Aggr-Impl")[2].partition("_t")[0]
+    if not id.isnumeric:
+        raise ValueError("participant id could not be determined")
 
     # Aggr-Impl35_t0-IATaggr_Block4_Version3&4.log
     #              ^
     t_id = s.partition("_t")[2].partition("-IATaggr")[0]
+    if t_id not in ("0", "1"):
+        raise ValueError("before/after incdicator could not be determined")
 
     # Aggr-Impl35_t0-IATaggr_Block4_Version3&4.log
     #                             ^
     block = s.partition("_Block")[2].partition("_Version")[0]
+    if block not in ("1", "2", "3", "4", "5"):
+        raise ValueError("Block number could not be determined")
+
     # Aggr-Impl35_t0-IATaggr_Block4_Version3&4.log
     #                                      ^^^
     version = s.partition("_Version")[2].partition(".log")[0]
@@ -97,9 +105,32 @@ def proc_single_file(file_path, cfg):
     return aggregated_respones
 
 
+def verify_files_are_good(path):
+    failed_files = {}
+    with os.scandir(path) as dir:
+        for entry in dir:
+            try:
+                # get participant id, before/after water, blocknumber, version from the single teststep
+                id, t_id, block, version = get_info_from_filename(
+                    str(entry.name))
+            except Exception as e:
+                # TODO add to list to display
+                failed_files[entry.name] = str(e)
+                continue
+
+    # Empty dictionaries evaluate to false
+    if failed_files:
+        gui_manager.show_key_value_list(failed_files)
+        return False
+
+    return True
+
 def process_files(cfg=None):
 
     path = os.path.abspath(cfg.path_input_directory)
+
+    if not verify_files_are_good(path=path):
+        raise RuntimeError("Not all Files were following the naming convention")
 
     participants = {}
 
@@ -109,10 +140,8 @@ def process_files(cfg=None):
                 # get participant id, before/after water, blocknumber, version from the single teststep
                 id, t_id, block, version = get_info_from_filename(
                     str(entry.name))
-            except Exception:
-                # TODO add to list to display
-                print("could not process file" + entry.name)
-                continue
+            except Exception as e:
+                raise RuntimeError("Files were modified during runtime {} {}".format(str(entry.name), str(e)))
 
             # skip block if not wanted
             if not block in cfg.include_blocks:
@@ -152,6 +181,8 @@ def process_files(cfg=None):
             # to show direction association to aggresion / peace
             for pressable_option, average_reaction_for_option in person_root.items():
                 participants[id][t_id][block][pressable_option] = average_reaction_for_option
+
+
 
         header_row = ["person_id",
                       "before_after_water",
@@ -202,11 +233,12 @@ if __name__ == "__main__":
     try:
         with iat_config_manager.IAT_config() as cfg:
             process_files(cfg)
-    except Exception:
+    except Exception as e:
+        gui_manager.show_error_msgbox(str(e))
         import sys
         print(sys.exc_info()[0])
         import traceback
-        print(traceback.format_exc())
+        print(traceback.format_exc()) 
     finally:
-        print("Press Enter to continue ...")
+        print("Execution finished.\nThis shows some data relevant to the Developer.\nPress Enter to close this Window.")
         input()
