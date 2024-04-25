@@ -138,7 +138,8 @@
         "rechts"
     ],
     "csv_dialect": "excel-tab",
-    "output_filename": "results.tsv",
+    "output_filename": "results",
+    "output_filename_format": ".tsv",
     "include_blocks": [
         "3",
         "5"
@@ -155,6 +156,6 @@
     ],
     "skip_errored_on_trial": true,
     "prohibit_output_options": [],
-    "path_input_directory": "C:\\Users\\Jan-PC-New\\git\\python\\nadine_zeug\\input",
-    "path_output_file": "C:\\Users\\Jan-PC-New\\git\\python\\nadine_zeug\\output\\results.tsv"
+    "path_input_directory": "C:/Users/Jan-PC-New/git/python/nadine_zeug/input",
+    "path_output_file": "C:/Users/Jan-PC-New/git/python/nadine_zeug/output\\results2024-04-25_05-45-58.tsv"
 }

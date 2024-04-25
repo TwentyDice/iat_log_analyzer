@@ -114,7 +114,6 @@ def verify_files_are_good(path):
                 id, t_id, block, version = get_info_from_filename(
                     str(entry.name))
             except Exception as e:
-                # TODO add to list to display
                 failed_files[entry.name] = str(e)
                 continue
 
