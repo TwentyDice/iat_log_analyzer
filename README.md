@@ -34,12 +34,25 @@ python your-directory\main.py
 ```
 
 # User Guide
-
-naming scheme
+## Naming scheme of Log files
+Each log file must follow the naming scheme, because the program takes Data
 walkthrough
-settings
+
 
 # Configuration
-You dont have to create the configuration manually. The configuration manager has a hardcoded default configuration with everything you need, that.\
-Deleting the configuration file will reset it to default. If you mess up your configuration\
-Determine where your "IAT_config.json" file is, see above \
+You dont have to create the configuration manually. The configuration manager has a hardcoded default configuration with everything you need, that is created on first execution.\
+If you mess up your configuration beyond repair you can delete it, to get the defaults back. \
+Determine where your "IAT_config.json" file is, see above. For now the config is determined by filename in the same directory as the  \
+If for whatever reason you want to work with multiple configs, you can just save them and switch configurations by changing the file names \
+Create a Backup of the file, before making any changes!.  \
+
+## How to configure
+The analyzer uses a single json file for configuration. \
+This includes statitc data needed to process data and configuration values that can be changed \
+If the value is not mentioned in the following list, DO NOT CHANGE IT YOU WILL BREAK STUFF
+### output_filename
+File name prefix, of the output file. Full file name is this + timestamp + output_filename_format. \
+Change to your liking, but must be a valid file name on your operation System. 
+### csv_dialect
+Determines the Output format of the Table that will be produced. 
+Default: `excel-tab` Will create a 
