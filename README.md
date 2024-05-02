@@ -35,8 +35,10 @@ python your-directory\main.py
 
 # User Guide
 ## Naming scheme of Log files
-Each log file must follow the naming scheme, because the program takes Data
-walkthrough
+Each log file must follow the naming scheme, because the program takes Data from the filename, that is not present elsewhere:
+
+
+## Walkthrough
 
 
 # Configuration
