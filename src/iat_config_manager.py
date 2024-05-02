@@ -93,6 +93,7 @@ _default_config = {
     'output_filename': 'results-',    
     'csv_dialect': "excel-tab",
     'output_filename_format': '.tsv',
+    'decimal_delimiter': ".",
     'include_blocks': ["3", "5"],
     'inclusive_minimum_trial_number': 0,
     'inclusive_minimum_response_time': 4000,
@@ -140,6 +141,7 @@ class IAT_config:
 
     def save_config_to_file(self):
         try:
+            #TODO copy the self dict and remove some entries
             json.dump(self.__dict__,
                       open(self._config_location, 'w'),
                       indent=4,

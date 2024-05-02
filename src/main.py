@@ -4,6 +4,7 @@ import os
 from typing import OrderedDict
 import csv
 import pprint
+import re
 
 import pandas
 
@@ -11,6 +12,7 @@ import iat_config_manager
 import gui_manager
 
 FILES_NAME_PROCESS_ERROR = "Some files could not be identified.\nCorrect the filename or remove them"
+
 
 def get_info_from_filename(file_name):
 
@@ -124,12 +126,14 @@ def verify_files_are_good(path):
 
     return True
 
+
 def process_files(cfg=None):
 
     path = os.path.abspath(cfg.path_input_directory)
 
     if not verify_files_are_good(path=path):
-        raise RuntimeError("Not all Files were following the naming convention")
+        raise RuntimeError(
+            "Not all Files were following the naming convention")
 
     participants = {}
 
@@ -140,7 +144,8 @@ def process_files(cfg=None):
                 id, t_id, block, version = get_info_from_filename(
                     str(entry.name))
             except Exception as e:
-                raise RuntimeError("Files were modified during runtime {} {}".format(str(entry.name), str(e)))
+                raise RuntimeError(
+                    "Files were modified during runtime {} {}".format(str(entry.name), str(e)))
 
             # skip block if not wanted
             if not block in cfg.include_blocks:
@@ -181,8 +186,6 @@ def process_files(cfg=None):
             for pressable_option, average_reaction_for_option in person_root.items():
                 participants[id][t_id][block][pressable_option] = average_reaction_for_option
 
-
-
         header_row = ["person_id",
                       "before_after_water",
                       "block",
@@ -215,13 +218,22 @@ def process_files(cfg=None):
                         out_line["block"] = block_key
 
                         print_line = False
-                        for option, average_response_time in pressable_options.items():
+                        for option, average_reaction_time in pressable_options.items():
                             if option in cfg.prohibit_output_options:
                                 continue
-                            if average_response_time:
+                            if average_reaction_time:
                                 print_line = True
                                 if option in out_line.keys():
-                                    out_line[option] = average_response_time
+                                    # Get a list of all non number in the calculated response
+                                    # This 
+                                    seperators_list = re.findall(r'\D', average_reaction_time)
+                                    for to_remove in  [' ', cfg.decimal_delimiter]:
+                                        if to_remove in seperators_list:
+                                            seperators_list.remove(to_remove)
+                                    if seperators_list:
+                                        for sep in seperators_list:
+                                            average_reaction_time = average_reaction_time.replace(sep, cfg.decimal_delimiter)
+                                    out_line[option] = average_reaction_time
                         if print_line:
                             w.writerow(out_line)
 

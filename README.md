@@ -56,5 +56,18 @@ If the value is not mentioned in the following list, DO NOT CHANGE IT YOU WILL B
 File name prefix, of the output file. Full file name is this + timestamp + output_filename_format. \
 Change to your liking, but must be a valid file name on your operation System. 
 ### csv_dialect
-Determines the Output format of the Table that will be produced. 
-Default: `excel-tab` Will create a 
+Determines the Output format of the File. The output is a Table that will be produced. \
+`excel-tab` (Default) Creates a Tab seperated values file. This can easily be imported into excel. \
+`excel` Creates a comma seperated values file. This can easily be imported into excel, make sure `floating_decimal_delimiter` is not a `,` \
+`unix` See here: https://docs.python.org/3/library/csv.html#csv.unix_dialect
+### output_filename_format
+File format of the output file, this direcly relates to csv_dialect setting. Include the `.` in the format. \
+For `excel-tab` use `.tsv` (Default) \
+For `excel` use `.csv`
+### decimal_delimiter
+Delimiter symbol used for decimal numbers, free text. default is `.` \
+If you want to import into Excel on a computer with german settings, change to `,`
+### include_blocks
+List of Blocks that should be processed. List of 
+If the block number is not include, it will not be processed.
+Default is `"3", "5"`
