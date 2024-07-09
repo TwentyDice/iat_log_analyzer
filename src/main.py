@@ -225,7 +225,7 @@ def process_files(cfg=None):
                                 print_line = True
                                 if option in out_line.keys():
                                     # Get a list of all non number in the calculated response
-                                    # This 
+                                    # Replace all 
                                     seperators_list = re.findall(r'\D', average_reaction_time)
                                     for to_remove in  [' ', cfg.decimal_delimiter]:
                                         if to_remove in seperators_list:

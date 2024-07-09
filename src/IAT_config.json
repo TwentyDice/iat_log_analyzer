@@ -10,7 +10,10 @@
                 "rechts": "Friedlichkeit"
             },
             "3": {
-                "links": "Ich Aggression",
+                "links": [
+                    "Ich",
+                    "Aggression"
+                ],
                 "rechts": [
                     "Andere",
                     "Friedlichkeit"
@@ -59,7 +62,10 @@
                     "Andere",
                     "Friedlichkeit"
                 ],
-                "rechts": "Ich Aggression"
+                "rechts": [
+                    "Ich",
+                    "Aggression"
+                ]
             }
         },
         "3": {
@@ -86,7 +92,10 @@
                 "rechts": "Friedlichkeit"
             },
             "5": {
-                "links": "Ich Aggression",
+                "links": [
+                    "Ich",
+                    "Aggression"
+                ],
                 "rechts": [
                     "Andere",
                     "Friedlichkeit"
@@ -107,7 +116,10 @@
                     "Andere",
                     "Friedlichkeit"
                 ],
-                "rechts": "Ich Aggression"
+                "rechts": [
+                    "Ich",
+                    "Aggression"
+                ]
             },
             "4": {
                 "links": "Aggression",
@@ -142,7 +154,10 @@
     "output_filename_format": ".tsv",
     "decimal_delimiter": ".",
     "include_blocks": [
+        "1",
+        "2",
         "3",
+        "4",
         "5"
     ],
     "inclusive_minimum_trial_number": 0,
@@ -156,7 +171,5 @@
         "2"
     ],
     "skip_errored_on_trial": true,
-    "prohibit_output_options": [],
-    "path_input_directory": "C:/Users/Jan-PC-New/git/python/nadine_zeug/input",
-    "path_output_file": "C:/Users/Jan-PC-New/git/python/nadine_zeug/output\\results-2024-05-02_20-01-32.tsv"
+    "prohibit_output_options": []
 }

@@ -71,14 +71,22 @@ If you want to import into Excel on a computer with german settings, change to `
 List of Blocks that should be processed. List of ["1", "2", "3", "4", "5"] \
 If the block number is not include, it will not be processed. \
 Default `["3", "5"]`
-## inclusive_minimum_trial_number
-Starting point on which trial number (Column Tiral) the calculation will be done. \
+### inclusive_minimum_trial_number
+Starting point on which trial number (Column Trial) the calculation will be done. \
+If you want to skip the . \
 Default `0`
-## inclusive_minimum_response_time & inclusive_maximum_response_time
+### inclusive_minimum_response_time & inclusive_maximum_response_time
 Minimum and Maximum response time that will be processed. \
 This is to exclude people pressing the button on accident, or outside a reasonable amount of time. \
 Default `4000 - 100000`
-## skip_errored_on_trial
-What to do with the result if the participant makes a mistake `true` will not include it `false` \
+### skip_errored_on_trial
+What to do with the result if the participant makes a mistake. \
+`true` will not include it `false` will process them normally \
 You should probably leave this on skip, because there is only 2 options in this trial, so if you press 1 and 1 is wrong, you press 2 without thinking.  \
 Default `true`
+### prohibit_output_options
+Exclude Columns in the Output, you can filter the Questions this way.\
+For example only show every related to Aggression. \
+This basically just filters the header value of the column as a string. \
+Default `[]`
+Options `["Andere", "Ich", "Aggression", "Friedlichkeit", "['Andere', 'Aggression']", "['Ich', 'Friedlichkeit']", "['Ich', 'Aggression']", "['Andere', 'Friedlichkeit']"]`

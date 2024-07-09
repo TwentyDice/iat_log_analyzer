@@ -142,7 +142,12 @@ class IAT_config:
     def save_config_to_file(self):
         try:
             #TODO copy the self dict and remove some entries
-            json.dump(self.__dict__,
+
+            stripped_config = self.__dict__.copy()
+            stripped_config.pop("path_input_directory")
+            stripped_config.pop("path_output_file")
+
+            json.dump(stripped_config,
                       open(self._config_location, 'w'),
                       indent=4,
                       separators=(',', ': '))
